@@ -1,0 +1,53 @@
+// Reference=MNI
+// Murphy,2010: self-evaluation>semantic positivity-evaluation (HC>Schizophrenia)(all)
+// Standardized name for contrast: self>nonPerson
+// Subjects=21
+-10	-78	46
+-40	-62	32
+10	-72	0
+
+// Pauly, 2013: self>lexical (healthy>schizophrenia)
+// Standardized name for contrast: self>nonperson
+// Subjects=26
+-40	-10	-26
+
+// Makowski, 2016: self(HSR)>other(HSR) (HC>SZ)
+// Standardized name for contrast: self>stranger
+// Subjects=30
+10	-44	38	
+18	-44	40
+46	-58	40
+36	-54	56
+40	-40	54
+
+// Brown,2019: self>other(HC>SAD)(all)
+// Standardized name for contrast: self>celebrity
+// Subjects=64
+-54	-49	7
+
+// Lombardo, 2010: self>other (healthy subjects>ASC)
+// Standardized name for contrast: self>celebrity
+// Subjects=62
+-4	46	-10
+
+// Herold, 2017: self-referential>non-self-referential (healthy>Mania)
+// Standardized name for contrast: self>nonperson
+// Subjects=28
+-6	54	10
+
+// Via, 2016: self>other(HC>AN, 40 female)
+// Standardized name for contrast: self>stranger
+// Subjects=40
+34	-62	48
+
+// Park, 2020: self>a family member (HC>UHR)
+// Standardized name for contrast: self>close
+// Subjects=50
+-24	 38 	-4
+-22 	 48 	-2
+-26 	 38 	-12
+
+// Bluhm, 2012: SC>GF (HC>PTSD)
+// Standardized name for contrast: self>nonperson
+// Subjects=35
+2	58	-12

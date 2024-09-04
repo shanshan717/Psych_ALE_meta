@@ -1,0 +1,183 @@
+// Reference=MNI
+// Sarsam, 2013: self>queen (Depression, 10 females, mean=32.7, sd=7.6)   
+// Standardized name for contrast: self>celebrity
+// Subjects=13
+0.39	38.58	36.41
+-3.28	40.87	3.75
+-44.36	32.87	0.76
+
+// Lemogne, 2009: self>general(depressed patients, 14females, mean=33.7, sd=9.5) 
+// Standardized name for contrast: self>nonPerson
+// Subjects=15
+9	42	33
+-42	9	36
+
+// Murphy, 2010: SE>SPE (SZ,4 females,mean=26.7,sd=6.36)
+// Standardized name for contrast: self>nonPerson
+// Subjects=11
+-8	-60	24
+-26	32	52
+-6	58	14
+-6	58	-2
+
+// Pauly, 2013: self>lexical (schizophrenia, 6 females, mean=36.23, sd=9.46)
+// Standardized name for contrast: self>nonperson
+// Subjects=13
+-13	46	46
+-46	30	-17
+-3	-56	30
+-10	-59	-3
+
+// Makowski, 2015: self>other (SZ,4 females,mean=33.1,sd=7.7)
+// Standardized name for contrast: self>stranger
+// Subjects=15
+14	-90	-38
+36	-86	-36
+64	-20	40
+4	32	-10
+-4	36	-10
+-4	22	-12
+-28	56	24
+-20	50	24
+-48	28	-16
+-8	-8	34
+42	22	-18
+-40	4	36
+-54	20	20
+56	14	10
+56	-20	36
+12	-54	14
+-6	-56	8
+-8	-54	10
+-38	-64	32
+32	-68	-10
+48	-20	38
+60	-12	40
+-46	30	-16
+-46	18	-12
+-40	-66	34
+-44	0	36
+-40	12	34
+
+// Pankow,2016: self>other (SZ,4 females,mean=33.1,sd=7.7)
+// Standardized name for contrast: self>stranger
+// Subjects=15
+
+// Furuichi, 2019: self>button (Schizophrenia, 7 females, mean=27, sd=5.3)
+// Standardized name for contrast: self>nonPerson
+// Subjects=13
+-22.35	-97.54	5.45
+5.83	27.96	37.37
+-34.82	-54.52	52.95
+-2.21	-45.64	-14.6
+39.81	22.55	-10.86
+-62.41	-44.73	9.87
+46.64	25.17	16.78
+
+// Fuentes-Claramonte, 2020: self>facts (schizophrenia, 7 females, mean=37, sd=8.06)
+// Standardized name for contrast: self>nonPerson
+// Subjects=23
+2	-52	28
+-16	58	32
+-44	-60	24
+-48	-6	-40
+50	4	-34
+56	-22	-14
+
+// Brown,2019,self>other(SAD,24 females,mean=27.3,SD=6.0)
+// Standardized name for contrast: self>celebrity
+// Subjects=51
+42	38	28
+
+// Zhang_1, 2015: self>semantic (Bipolar disorder, 10 females, mean=41.29, sd=11.82) 
+// Standardized name for contrast: self>nonPerson
+// Subjects=17
+0 	-44 	28
+-10 	-58 	32
+-2 	60 	14
+-22 	60 	20
+-8 	48	 2
+2 	-18 	36
+24 	42 	46
+-52 	-66 	36
+-12 	28 	56
+56 	-62 	34
+
+// Zhang_2, 2015: self>semantic (schizophrenia, 6 females, mean=35.53, sd=9.74) 
+// Standardized name for contrast: self>nonPerson
+// Subjects=17
+-2	60	14
+-8	62	26
+-22 	54 	32
+-6 	-54 	32
+2 	-50 	30
+8 	-70 	40
+-44	-58 	26
+-38 	-54 	32
+
+// McAdams, 2016: Self>Reflected (AN-C/Anorexia nervosa, Social Identity-V2 Task)
+// Standardized name for contrast: self>nonperson
+// Subjects=22
+-12	-92	0
+
+// Via, 2016: self>other(AN, 20female, mean=28.4, SD=9.3)
+// Standardized name for contrast: self>stranger
+// Subjects=20
+46	-42	52
+56	-34	50
+-60	-34	26
+62	-22	26
+60	-30	26
+-46	-64	-14
+44	-62	-10
+-36	-50	46
+-30	-54	52
+46	-66	-8
+42	-76	-6
+40	16	-10
+48	10	0
+30	18	-2
+-54	-38	42
+-52	-42	50
+16	-64	48
+16	-72	40
+-44	42	16
+32	-86	12
+38	-82	8
+4	26	30
+34	-34	-16
+30	-40	-4
+-34	14	0
+-8	-34	36
+-12	-42	40
+0	-36	44
+18	-72	34
+12	-70	44
+26	26	38
+-38	-78	24
+-44	-74	20
+-28	-78	30
+42	-70	30
+44	-62	32
+44	-70	20
+38	-60	44
+34	-66	40
+28	28	40
+44	-70	28
+44	-62	32
+58	-56	20
+-42	-82	26
+-42	-70	22
+
+// Bluhm, 2012: SC>GF (PTSD,13 females, mean=38.3, sd=9.33)
+// Standardized name for contrast: self>nonperson
+// Subjects=20
+-10	60	22
+4	-54	6
+
+// Bach, 2021: self>familiar + unknown person (Pathological gamers, T1, mean=21.45, sd=3.05) 
+// Standardized name for contrast: self>close+stranger
+// Subjects=11
+-40	8	4
+-2	38	8
+36	16	10

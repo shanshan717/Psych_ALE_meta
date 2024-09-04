@@ -1,0 +1,58 @@
+// Reference=MNI
+// Sarsam, 2013: Self>queen (depressed>healthy, 8 females)   
+// Standardized name for contrast: self>celebrity
+// Subjects=27
+0.54	28.77	46.35
+
+// Pauly, 2013: self>other (schizophrenia>healthy)
+// Standardized name for contrast: self>close
+// Subjects=26
+49	-7	46
+36	-20	43
+
+// Furuichi, 2019: Self>Button (Schizophrenia patients>Healthy subjects) 
+// Standardized name for contrast: self>nonPerson
+// Subjects=28
+49	-43	41
+30	15	50
+
+// Brown,2019: self>other(SAD>HC)(all)(Social anxiety disorder=SAD, healthy control=HC)
+// Standardized name for contrast: self>celebrity
+// Subjects=64
+24	-85	10
+39	7	-17
+
+// Fuentes-Claramonte, 2020: self>facts (schizophrenia>healthy controls)
+// Standardized name for contrast: self>nonPerson
+// Subjects=50
+-52	14	36
+
+// McAdams, 2016: self>friend (AN-C>HC, Social Identity-V2 Task) 
+// Standardized name for contrast: self>close
+// Subjects=41
+16	56	16
+
+// Via, 2016: self>other(AN>HC, 40 female)
+// Standardized name for contrast: self>stranger
+// Subjects=40
+4	46	4
+-2	-80	40
+-12	-78	32
+-10	-40	70
+6	-44	68
+-14	-48	42
+
+// Shad,2012,SR(self-directed)>OR(other-directed)(Schizophrenia>healthy controls)
+// Standardized name for contrast: self>celebrity
+// Subjects=32
+9	-45	0
+-36	-12	39
+
+// Blair, 2008: self>other (GSP>HC)  
+// Standardized name for contrast: self>stranger 
+// Subjects=34
+-28.26	83.54	2.2
+48.99	46.3	35.94
+21.49	-22.05	-16.22
+20.74	57.07	26.39
+-26.67	42.53	34.24
