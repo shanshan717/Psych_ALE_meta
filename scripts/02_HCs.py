@@ -16,6 +16,7 @@
 
 # %%
 # 加载必要的包
+from os import makedirs, path
 import os
 import numpy as np
 import pandas as pd
@@ -25,15 +26,7 @@ from nilearn import image, plotting, reporting
 from nimare import correct, io, meta, utils #主要用nimare完成元分析
 from scipy.stats import norm
 
-# %%
-# 切换到项目根目录
-os.chdir('/Users/ss/Documents/Psych_ALE_meta')
-print(os.getcwd())
 
-# %%
-# 获取当前脚本所在的目录
-# os.path.dirname(os.path.abspath(__file__))
-# print(os.getcwd())
 # %% [markdown]
 # We are now ready to perform the actual ALE analyses with NiMARE. 
 # We write a custom function which takes a single Sleuth text file as its input and (a) calculates the ALE map, 
@@ -54,7 +47,7 @@ def run_ale(text_file, voxel_thresh, cluster_thresh, random_seed, n_iters, outpu
 
     # Perform the ALE
     # target默认的是'ale_2mm'和'mni152_2mm'两种，这里我们选择'mni152_2mm'
-    text_file_path = os.path.abspath('../data/unhealth.txt')
+    text_file_path = os.path.abspath('../data/health.txt')
     dset = io.convert_sleuth_to_dataset(text_file=text_file_path, target="mni152_2mm") 
     ale = meta.cbma.ALE()
     res = ale.fit(dset)
@@ -89,7 +82,7 @@ def run_ale(text_file, voxel_thresh, cluster_thresh, random_seed, n_iters, outpu
 # 运行ALE分析
 if __name__ == "__main__":
     # 输入疾病患者的Sleuth文件
-    sleuth_file = "../data/unhealth.txt"  
+    sleuth_file = "../data/health.txt"  
 
     # 应用我们定义的 run_ale 函数
     cres = run_ale(
@@ -109,7 +102,7 @@ if __name__ == "__main__":
 if __name__ == "__main__":
 
     # Glass brain example
-    img = image.load_img("../output/unhealth_z.nii.gz")
+    img = image.load_img("../output/health_z.nii.gz")
     p = plotting.plot_glass_brain(img, display_mode="lyrz", colorbar=True)
 
     # Cluster table example

@@ -27,7 +27,7 @@
 
 # %%
 from os import makedirs, path
-
+import os
 import numpy as np
 from IPython.display import display
 from nibabel import save
@@ -148,8 +148,8 @@ if __name__ == "__main__":
     # Create dictionary for subtraction analysis: health vs unhealth
     subtrs = dict(
         {
-            "/Users/ss/Desktop/psych_meta/script/GenerateNull/data_ALE/health.txt":
-            "/Users/ss/Desktop/psych_meta/script/GenerateNull/data_ALE/unhealth.txt"
+            "../data/health.txt":
+            "../data/unhealth.txt"
         }
     )
 
@@ -162,5 +162,5 @@ if __name__ == "__main__":
             cluster_size_mm3=200,      # Set cluster size threshold
             random_seed=1234,          # Set random seed for reproducibility
             n_iters=1000,             # 这里作者用的是20000，我这里改成了1000
-            output_dir="/Users/ss/Desktop/psych_meta/output/ale/subtraction"  # Specify your output directory
+            output_dir="../output/ale"  # Specify your output directory
         )

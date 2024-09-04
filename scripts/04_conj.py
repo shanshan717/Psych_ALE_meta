@@ -45,10 +45,10 @@ from IPython.display import display
 
 # %%
 # Copy Sleuth text files to the results directory
-output_dir = "/Users/ss/Desktop/psych_meta/output/ale/conjunction/"
+output_dir = "../output/ale"
 _ = makedirs(output_dir, exist_ok=True)
-_ = copy("/Users/ss/Desktop/psych_meta/script/GenerateNull/data_ALE/unhealth.txt", output_dir + "unhealth.txt")
-_ = copy("/Users/ss/Desktop/psych_meta/script/GenerateNull/data_ALE/health.txt", output_dir + "health.txt")
+_ = copy("../data/health.txt", output_dir + "health.txt")
+_ = copy("../data/unhealth.txt", output_dir + "unhealth.txt")
 
 # %% [markdown]
 # We can use our custom ALE function to recreate the adult-specific analysis. We use the same voxel- and cluster-level thresholds as for the children so that our group comparison will be meaningful.
@@ -60,7 +60,7 @@ _ = run_ale(
     voxel_thresh=0.001,
     cluster_thresh=0.01,
     random_seed=1234,
-    n_iters=1000,
+    n_iters=5000,
     output_dir=output_dir,
 )
 
