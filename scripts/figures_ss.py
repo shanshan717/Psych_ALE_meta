@@ -39,7 +39,7 @@ from scipy.stats import pearsonr
 # mpl.rcParams.update({"font.family": ["Liberation Sans"], "font.size": 12})
 
 # Create output directory
-output_dir = "/Users/ss/Desktop/figures"
+output_dir = "output/ale"
 makedirs(output_dir, exist_ok=True)
 
 # Define scaling factor so we can set all the figure sizes in scaling gpt
@@ -62,19 +62,19 @@ norm = mpl.colors.Normalize(vmin=0, vmax=vmax_viridis, clip=True)  # Color norma
 vmin, vmax = 0, 8  # Z-score range for coloring
 
 # Plot z-maps from ALE
-img_unhealth = image.load_img("/Users/ss/Desktop/psych_meta/output/ale/unhealth_z_thresh.nii.gz")
+img_unhealth = image.load_img("output/ale/patients/unhealth_z_thresh.nii.gz")
 p3 = plotting.plot_glass_brain(None, display_mode="lyrz", axes=ax1)
 p3.add_overlay(img_unhealth, cmap="YlOrRd", vmin=vmin, vmax=vmax)
 
 plt.show()
 
 # Save the figure as PNG and PDF formats
-fig1.savefig("/Users/ss/Desktop/figures/fig1.png", dpi=300)
-fig1.savefig("/Users/ss/Desktop/figures/fig1.pdf")
+fig1.savefig("output/figures/fig1.png", dpi=300)
+fig1.savefig("output/figures/fig1.pdf")
 
 
 # Plot conjunction
-vmin_3, vmax_3 = 0, 8
-img_conj = image.load_img("/Users/ss/Desktop/psych_meta/output/ale/conjunction/health_conj_unhealth_z.nii.gz")
-p3 = plotting.plot_glass_brain(None, display_mode="lyrz", axes=ax3)
-p3.add_overlay(img_conj, cmap="YlOrRd", vmin=vmin_3, vmax=vmax_3)
+#vmin_3, vmax_3 = 0, 8
+#img_conj = image.load_img("/Users/ss/Desktop/psych_meta/output/ale/conjunction/health_conj_unhealth_z.nii.gz")
+#p3 = plotting.plot_glass_brain(None, display_mode="lyrz", axes=ax3)
+#p3.add_overlay(img_conj, cmap="YlOrRd", vmin=vmin_3, vmax=vmax_3)
