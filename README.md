@@ -1,10 +1,10 @@
 # Overview
-This repository contains the analytic code used in the study titled *"Abnormal brain activations during self-referential processing across psychiatric disorders: A transdiagnostic neuroimaging meta-analysis."* 
+This repository contains the analytic code used in the study titled *"Abnormal brain activations for processing self-referential information across psychiatric disorders? A meta-analysis of neuroimaging studies."* 
 
 # 项目文件结构
 
 ```bash
-Psych_ALE_meta-1/
+Psych_ALE_meta/
 │
 ├── data/
 │   ├── health.txt
@@ -33,9 +33,9 @@ Psych_ALE_meta-1/
 
 To run the analysis, navigate to the scripts/ folder and execute the Python scripts in the following order:
 
-	1.	py01_patients.py: Analyzes patient group data.
-	2.	py02_HCs.py: Analyzes healthy control group data.
-	3.	py03_subtraction.py: Performs subtraction analysis.
-	4.	py04_conj.py: Conducts conjunction analysis.
-	5.	py05_tables.py: Generates tables from the results.
-	6.	py06_figures.py: Generates figures for the study.
+1.	py01_patients.py: Analyzes patient group data.
+2.	py02_HCs.py: Analyzes healthy control group data.
+3.	py03_subtraction.py: Performs subtraction analysis.
+4.	py04_conj.py: Conducts conjunction analysis.
+5.	py05_tables.py: Generates tables from the results.
+6.	py06_figures.py: Generates figures for the study.
