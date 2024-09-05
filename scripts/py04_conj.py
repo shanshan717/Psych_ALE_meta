@@ -25,25 +25,29 @@
 # Let's start by loading all the packages we need. Note that we're also importing two of the custom functions which we have created in the first two notebooks.
 
 # %%
-from os import makedirs
+from os import makedirs, path
 from shutil import copy
 
 from IPython.display import display
 from nibabel import save
 from nilearn import image, plotting, reporting
 
-from nb01_ale import run_ale
-from nb02_subtraction import run_subtraction
+from py02_HCs import run_ale
+
+import numpy as np
+import pandas as pd
+from atlasreader import get_statmap_info
+from IPython.display import display
 
 # %% [markdown]
 # We create a new output directory and put our two pre-existing Sleuth files there: the child-specific Sleuth file that we created with the help of Notebook #01 and the adult-specific Sleuth file that was kindly provided to us by Dr Rebecca L. Jackson from MRC CBU at Cambridge (UK).
 
 # %%
 # Copy Sleuth text files to the results directory
-output_dir = "/Users/ss/Desktop/psych_meta/output/ale/conjunction/"
+output_dir = "output"
 _ = makedirs(output_dir, exist_ok=True)
-_ = copy("/Users/ss/Desktop/psych_meta/script/GenerateNull/data_ALE/unhealth.txt", output_dir + "unhealth.txt")
-_ = copy("/Users/ss/Desktop/psych_meta/script/GenerateNull/data_ALE/health.txt", output_dir + "health.txt")
+_ = copy("data/health.txt", output_dir + "health.txt")
+_ = copy("data/unhealth.txt", output_dir + "unhealth.txt")
 
 # %% [markdown]
 # We can use our custom ALE function to recreate the adult-specific analysis. We use the same voxel- and cluster-level thresholds as for the children so that our group comparison will be meaningful.
@@ -55,7 +59,7 @@ _ = run_ale(
     voxel_thresh=0.001,
     cluster_thresh=0.01,
     random_seed=1234,
-    n_iters=1000,
+    n_iters=5000,
     output_dir=output_dir,
 )
 
@@ -93,33 +97,34 @@ _ = save(img_adults_gt_children, output_dir + "adults_greater_children_z_thresh.
 # %%
 # Compute conjunction z map (= minimum voxel-wise z score across both groups)
 formula = "np.where(img1 * img2 > 0, np.minimum(img1, img2), 0)"
-img_adults_z = image.load_img(output_dir + "adults_z_thresh.nii.gz")
-img_children_z = image.load_img("../results/ale/all_z_thresh.nii.gz")
-img_conj_z = image.math_img(formula, img1=img_adults_z, img2=img_children_z)
-_ = save(img_conj_z, output_dir + "children_conj_adults_z.nii.gz")
+img_health_z = image.load_img(output_dir + "health_z_thresh.nii.gz")
+img_unhealth_z = image.load_img(output_dir + "unhealth_z_thresh.nii.gz")
+img_conj_z = image.math_img(formula, img1=img_health_z, img2=img_unhealth_z)
+_ = save(img_conj_z, output_dir + "health_conj_unhealth_z.nii.gz")
 
 # Compute conjunction ALE map (= minimum voxel-wise ALE value across both groups)
-img_adults_ale = image.load_img(output_dir + "adults_stat_thresh.nii.gz")
-img_children_ale = image.load_img("../results/ale/all_stat_thresh.nii.gz")
-img_conj_ale = image.math_img(formula, img1=img_adults_ale, img2=img_children_ale)
-_ = save(img_conj_ale, output_dir + "children_conj_adults_ale.nii.gz")
+img_health_ale = image.load_img(output_dir + "health_stat_thresh.nii.gz")
+img_unhealth_ale = image.load_img(output_dir + "unhealth_stat_thresh.nii.gz")
+img_conj_ale = image.math_img(formula, img1=img_health_ale, img2=img_unhealth_ale)
+_ = save(img_conj_ale, output_dir + "health_conj_unhealth_ale.nii.gz")
 
 # %% [markdown]
 # Now let's look at the different maps that we've created in the previous steps. We started with the adult-specific ALE analysis.
 
 # %%
-# Glass brain for adults only
-p = plotting.plot_glass_brain(img_adults_z, display_mode="lyrz", colorbar=True)
+# Glass brain for health only
+p = plotting.plot_glass_brain(img_health_z, display_mode="lyrz", colorbar=True)
 
-# Cluster table for adults only
-t = reporting.get_clusters_table(img_adults_z, stat_threshold=0, min_distance=1000)
+# Cluster table for healthonly
+t = reporting.get_clusters_table(img_health_z, stat_threshold=0, min_distance=1000)
 display(t)
 
 # %% [markdown]
 # Second, let's plot the subtraction map which shows us the group differences between children and adults.
 
 # %%
-# Glass brain for children vs. adults
+# Glass brain for health vs. unhealth
+"""
 p_sub = plotting.plot_glass_brain(
     img_sub,
     display_mode="lyrz",
@@ -134,7 +139,7 @@ t_sub = reporting.get_clusters_table(
     img_sub, stat_threshold=0, min_distance=1000, two_sided=True
 )
 display(t_sub)
-
+"""
 # %% [markdown]
 # And, finally, let's also plot the conjunction map to see which clusters were engaged in semantic cognition in both children *and* adults.
 

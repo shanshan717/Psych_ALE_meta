@@ -14,7 +14,6 @@
 #     name: python3
 # ---
 
-# %%
 # 加载必要的包
 from os import makedirs, path
 import os
@@ -27,14 +26,12 @@ from nimare import correct, io, meta, utils #主要用nimare完成元分析
 from scipy.stats import norm
 
 
-# %% [markdown]
 # We are now ready to perform the actual ALE analyses with NiMARE. 
 # We write a custom function which takes a single Sleuth text file as its input and (a) calculates the ALE map, 
 # (b) corrects for multiple comparisons using a Monte Carlo-based FWE correction, 
 # and (c) stores the cluster level-thresholded maps into the output directory. 
 # We then apply this function to all the Sleuth files we have created in the previous step. 
 
-# %%
 # Define function for performing a single ALE analysis with FWE correction
 def run_ale(text_file, voxel_thresh, cluster_thresh, random_seed, n_iters, output_dir):
 
@@ -47,7 +44,7 @@ def run_ale(text_file, voxel_thresh, cluster_thresh, random_seed, n_iters, outpu
 
     # Perform the ALE
     # target默认的是'ale_2mm'和'mni152_2mm'两种，这里我们选择'mni152_2mm'
-    dset = io.convert_sleuth_to_dataset(text_file="../data/health.txt", target="mni152_2mm") 
+    dset = io.convert_sleuth_to_dataset(text_file="data/health.txt", target="mni152_2mm") 
     ale = meta.cbma.ALE()
     res = ale.fit(dset)
 
@@ -81,8 +78,7 @@ def run_ale(text_file, voxel_thresh, cluster_thresh, random_seed, n_iters, outpu
 # 运行ALE分析
 if __name__ == "__main__":
     # 输入疾病患者的Sleuth文件
-    print("test........",os.getcwd())
-    sleuth_file = "./data/health.txt"
+    sleuth_file = "data/health.txt"
 
     # 应用我们定义的 run_ale 函数
     cres = run_ale(
@@ -91,23 +87,21 @@ if __name__ == "__main__":
         cluster_thresh=0.05,
         random_seed=1234,
         n_iters=5000,  
-        output_dir="../output",
+        output_dir="data",
     )
 
 
-# %% [markdown]
 # Finally, let's look at some exemplary results by plotting the (cluster-level FWE-corrected) *z* score map from the main analysis (including all semantic experiments). We also print a table of the corresponding cluster statistics.
 
 # %%
 if __name__ == "__main__":
 
     # Glass brain example
-    img = image.load_img("../output/health_z.nii.gz")
+    img = image.load_img("data/health_z.nii.gz")
     p = plotting.plot_glass_brain(img, display_mode="lyrz", colorbar=True)
 
     # Cluster table example
     t = reporting.get_clusters_table(img, stat_threshold=0, min_distance=1000)
     display(t)
 
-# %%
     print(cres.maps.keys())

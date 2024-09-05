@@ -71,10 +71,3 @@ plt.show()
 # Save the figure as PNG and PDF formats
 fig2.savefig("output/figures/fig2.png", dpi=300)
 fig2.savefig("output/figures/fig2.pdf")
-
-
-# Plot conjunction
-#vmin_3, vmax_3 = 0, 8
-#img_conj = image.load_img("/Users/ss/Desktop/psych_meta/output/ale/conjunction/health_conj_unhealth_z.nii.gz")
-#p3 = plotting.plot_glass_brain(None, display_mode="lyrz", axes=ax3)
-#p3.add_overlay(img_conj, cmap="YlOrRd", vmin=vmin_3, vmax=vmax_3)

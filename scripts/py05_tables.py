@@ -24,7 +24,7 @@
 # This notebook contains a convenience function that we've used to create all of the tables for our manuscript. We only comment on these sparsely since no substantial work is happening here and because the solutions we've used are very idiosyncratic to the present meta-analysis. Also note that the tables still required a bit of post-processing, such as turning the anatomical peak labels from abbreviations into plain language.
 
 # %%
-!pip install atlasreader
+# !pip install atlasreader
 
 # %%
 from os import makedirs, path
@@ -36,61 +36,7 @@ from IPython.display import display
 from nilearn import image
 
 # %% [markdown]
-# Table 1 in the manuscript provides descriptive information about the experiments included in the meta-analysis. This information was originally stored in the file `data/literature_search/included.csv`. It was then updated with some additional information in the previous notebooks and stored as a new file called `results/exps.json`. Here we load this into a DataFrame and compute some summary statistics which are reported in the paper (such as the overall sample size of children and their mean age).
-
-# %%
-# Read included experiments (Table 1)
-"""
-exps = pd.read_json("../results/exps.json")
-exps["peaks"] = [np.array(peaks, dtype="float") for peaks in exps["peaks"]]
-exps["n_peaks"] = [len(peaks) for peaks in exps["peaks"]]
-
-# Compute summary statistics
-_ = [
-    print(
-        col + ":",
-        "sum",
-        exps[col].sum(),
-        "mean",
-        exps[col].mean(),
-        "median",
-        exps[col].median(),
-        "min",
-        exps[col].min(),
-        "max",
-        exps[col].max(),
-    )
-    for col in ["n", "age_mean", "age_min", "age_max", "n_peaks"]
-]
-
-# Compute weighted mean age
-exps["age_mean_weighted"] = [age * n for age, n in zip(exps["age_mean"], exps["n"])]
-print("weighted mean age:", exps["age_mean_weighted"].sum() / exps["n"].sum())
-
-# Compute sex and handedness ratios
-print(exps["sex_female"].sum() / (exps["sex_female"].sum() + exps["sex_male"].sum()))
-print(exps["hand_right"].sum() / (exps["hand_right"].sum() + exps["hand_left"].sum()))
-
-# Count peaks with and without effect sizes
-tstats = exps["tstats_corr"].explode()
-print(len(tstats[tstats != "p"]))
-print(len(tstats[tstats != "p"]) / len(tstats))
-print(len(tstats[tstats == "p"]))
-
-# Cut peaks in left vs. right hemisphere
-peaks = exps["peaks_mni"].explode()
-peaks_x = [focus[0] for focus in peaks]
-peaks_left = [x for x in peaks_x if x < 0]
-print(len(peaks_left))
-print(len(peaks_left) / len(peaks_x))
-"""
-# %% [markdown]
-# This next block is a helper function to create a cluster table from multiple *z* score maps. 
-# It also has an option to add ALE values if a corresponding ALE value map happens to be available 
-# (note that this is not the case for subtraction analyses and SDM maps). 
-# The function also looks up anatomical labels for each cluster and 
-# its peak based on the anatomic automatic labeling atlas (AAL2; Rolls et al., 2015, *NeuroImage*) 
-# as implemented in the AtlasReader package (Notter et al., 2019, *J Open Source Softw*).
+# We apply this function to create the Cluster Tables 2–6. These present the results of all of our ALE, subtraction, and SDM analyses.
 
 # %%
 # Define function to print the clusters from multiple images as a table
@@ -99,7 +45,7 @@ def combined_cluster_table(
     img_files_ale=[],
     stub_keys=[],
     stub_colname="Analysis",
-    atlas="aal",
+    atlas="harvard_oxford",
     td_jar=None,
     output_file="cluster_table.tsv",
 ):
@@ -110,7 +56,7 @@ def combined_cluster_table(
 
     # Create a list of DataFrames with peak and cluster stats for each image
     df_tuples = [
-        get_statmap_info(img_file, cluster_extent=0, atlas="aal", voxel_thresh=0)
+        get_statmap_info(img_file, cluster_extent=0, atlas="harvard_oxford", voxel_thresh=0)
         for img_file in img_files_z
     ]
     dfs = [
@@ -133,7 +79,7 @@ def combined_cluster_table(
     # Add ALE values if available
     if img_files_ale:
         df_tuples_ale = [
-            get_statmap_info(img_file, cluster_extent=0, atlas="aal", voxel_thresh=0)
+            get_statmap_info(img_file, cluster_extent=0, atlas="harvard_oxford", voxel_thresh=0)
             if img_file
             else (
                 pd.DataFrame({"cluster_mean": [float("nan")]}),
@@ -179,55 +125,51 @@ def combined_cluster_table(
 
     return df
 
-
-# %% [markdown]
-# We apply this function to create the Cluster Tables 2–6. These present the results of all of our ALE, subtraction, and SDM analyses.
-
 # %%
-# Create Table 2 (ALE & SDM results) 主要看table2的代码
+# Create ALE results Table
 tab2 = combined_cluster_table(
     img_files_z=[
-        "../results/ale/all_z_thresh.nii.gz",
-        "../results/sdm/analysis_mod1/mod1_z_thresh.nii.gz",
-        "../results/sdm/analysis_mod2/mod2_z_thresh.nii.gz",
+        "output/ale/unhealth_z_thresh.nii.gz", # 这里的图像要根据ALE的结果来
     ],
     stub_keys=[
         "Activation likelihood estimation",
-        "Seed-based d mapping",
-        "With covariates",
     ],
     stub_colname="Analysis",
     img_files_ale=[
-        "../results/ale/all_stat_thresh.nii.gz",
-        None,
-        None,
+        "output/ale/unhealth_stat_thresh.nii.gz", # 这里的图像是z转换后的结果
     ],
-    atlas="aal",
-    output_file="../results/tables/tab2_children.tsv",
+    atlas="harvard_oxford",
+    output_file="output/ale/tabALE1.tsv",
 )
-display(tab2)
-
 
 # %%
-# Create Table 3 (task category ALEs)
-tab3 = combined_cluster_table(
+# Create ALE results Table
+tab2 = combined_cluster_table(
     img_files_z=[
-        "../results/ale/knowledge_z_thresh.nii.gz",
-        "../results/ale/relatedness_z_thresh.nii.gz",
-        "../results/ale/objects_z_thresh.nii.gz",
+        "output/ale/health_z_thresh.nii.gz", # 这里的图像要根据ALE的结果来
     ],
     stub_keys=[
-        "Knowledge",
-        "Relatedness",
-        "Objects",
+        "Activation likelihood estimation",
     ],
     stub_colname="Analysis",
     img_files_ale=[
-        "../results/ale/knowledge_stat_thresh.nii.gz",
-        "../results/ale/relatedness_stat_thresh.nii.gz",
-        "../results/ale/objects_stat_thresh.nii.gz",
+        "output/ale/health_stat_thresh.nii.gz", # 这里的图像是z转换后的结果
     ],
-    atlas="aal",
-    output_file="../results/tables/tab3_tasks.tsv",
+    atlas="harvard_oxford",
+    output_file="output/ale/tabALE2.tsv",
+)
+
+# Create Table 3 (conjunction)
+tab3 = combined_cluster_table(
+    img_files_z=[
+        "output/conj/health_conj_unhealth_z.nii.gz",
+    ],
+    stub_keys=["Conjunction"],
+    stub_colname="Analysis",
+    img_files_ale=[
+        "output/conj/health_conj_unhealth_ale.nii.gz",
+    ],
+    atlas="harvard_oxford",
+    output_file="output/ale/tab_conj.tsv",
 )
 display(tab3)
