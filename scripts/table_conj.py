@@ -127,6 +127,7 @@ def combined_cluster_table(
 
 # %%
 # Create ALE results Table
+'''
 tab2 = combined_cluster_table(
     img_files_z=[
         "/Users/ss/Desktop/psych_meta/output/ale/unhealth_z_thresh.nii.gz", # 这里的图像要根据ALE的结果来
@@ -141,16 +142,17 @@ tab2 = combined_cluster_table(
     atlas="harvard_oxford",
     output_file="/Users/ss/Desktop/psych_meta/output/ale/tabALE.tsv",
 )
+'''
 
 # Create Table 6 (comparison with adults)
 tab6 = combined_cluster_table(
     img_files_z=[
-        "../results/adults/children_conj_adults_z.nii.gz",
+        "output/conj/health_conj_unhealth_z.nii.gz",
     ],
     stub_keys=["Conjunction"],
     stub_colname="Analysis",
     img_files_ale=[
-        "../results/adults/children_conj_adults_ale.nii.gz",
+        "output/conj/health_conj_unhealth_ale.nii.gz",
     ],
     atlas="harvard_oxford",
     output_file="output",
