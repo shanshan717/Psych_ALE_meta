@@ -142,3 +142,17 @@ tab2 = combined_cluster_table(
     output_file="/Users/ss/Desktop/psych_meta/output/ale/tabALE.tsv",
 )
 
+# Create Table 6 (comparison with adults)
+tab6 = combined_cluster_table(
+    img_files_z=[
+        "../results/adults/children_conj_adults_z.nii.gz",
+    ],
+    stub_keys=["Conjunction"],
+    stub_colname="Analysis",
+    img_files_ale=[
+        "../results/adults/children_conj_adults_ale.nii.gz",
+    ],
+    atlas="harvard_oxford",
+    output_file="output",
+)
+display(tab6)
