@@ -1,0 +1,2 @@
+Analysis	Cluster #	Size (mm3)	Cluster labels	Mean z	Mean ALE	Peak z	Peak ALE	Peak X	Peak Y	Peak Z	Peak label
+Activation likelihood estimation	1	1,256	59.24% Left_Cingulate_Gyrus_posterior_division; 40.76% Left_Precuneous_Cortex	3.63	0.012	4.88	0.019	-6	-54	30	57.0% Left_Cingulate_Gyrus_posterior_division; 19.0% Left_Precuneous_Cortex
