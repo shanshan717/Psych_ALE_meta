@@ -1,20 +1,3 @@
-# -*- coding: utf-8 -*-
-# ---
-# jupyter:
-#   jupytext:
-#     formats: py:percent
-#     text_representation:
-#       extension: .py
-#       format_name: percent
-#       format_version: '1.3'
-#       jupytext_version: 1.11.1
-#   kernelspec:
-#     display_name: Python 3
-#     language: python
-#     name: python3
-# ---
-
-# %% [markdown]
 # ![SkeideLab and MPI CBS logos](../misc/header_logos.png)
 #
 # # Notebook #07: Output Tables
@@ -23,23 +6,31 @@
 #
 # This notebook contains a convenience function that we've used to create all of the tables for our manuscript. We only comment on these sparsely since no substantial work is happening here and because the solutions we've used are very idiosyncratic to the present meta-analysis. Also note that the tables still required a bit of post-processing, such as turning the anatomical peak labels from abbreviations into plain language.
 
-# %%
 # !pip install atlasreader
 
-# %%
 from os import makedirs, path
-
-import numpy as np
-import pandas as pd
 from atlasreader import get_statmap_info
 from IPython.display import display
-from nilearn import image
+from nilearn import image, plotting, reporting
+from scipy import stats
+from scipy.stats import pearsonr
+from glob import glob
+from pathlib import Path
 
-# %% [markdown]
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import os, fnmatch
+
+import re
+
 # We apply this function to create the Cluster Tables 2–6. These present the results of all of our ALE, subtraction, and SDM analyses.
 
-# %%
 # Define function to print the clusters from multiple images as a table
+# 定义绘制表格的函数
 def combined_cluster_table(
     img_files_z=[],
     img_files_ale=[],
@@ -125,7 +116,7 @@ def combined_cluster_table(
 
     return df
 
-# %%
+# Load the ALE results
 # Create ALE results Table
 tab2 = combined_cluster_table(
     img_files_z=[
@@ -141,10 +132,10 @@ tab2 = combined_cluster_table(
     atlas="harvard_oxford",
     output_file="output/ale/tabALE1.tsv",
 )
+display(tab2)
 
-# %%
 # Create ALE results Table
-tab2 = combined_cluster_table(
+tab3 = combined_cluster_table(
     img_files_z=[
         "output/ale/health_z_thresh.nii.gz", # 这里的图像要根据ALE的结果来
     ],
@@ -158,9 +149,10 @@ tab2 = combined_cluster_table(
     atlas="harvard_oxford",
     output_file="output/ale/tabALE2.tsv",
 )
+display(tab3)
 
 # Create Table 3 (conjunction)
-tab3 = combined_cluster_table(
+tab4 = combined_cluster_table(
     img_files_z=[
         "output/conj/health_conj_unhealth_z.nii.gz",
     ],
@@ -172,4 +164,55 @@ tab3 = combined_cluster_table(
     atlas="harvard_oxford",
     output_file="output/ale/tab_conj.tsv",
 )
-display(tab3)
+display(tab4)
+
+# -----------------------------------------------
+# individual peaks coordinates-plot
+# Read table of experiments from ALE analysis
+exps = pd.read_json("/Results/ALE/all_exps.json")
+
+# Convert to categories and sort
+group = ["Babies","Babies + Cry","Cry","Friendship", "Non-babies","Romance"]
+exps["group"] = exps["group"].astype("category")
+exps["group"].cat.reorder_categories(group, inplace=True)
+
+# Extract all individual peaks and their z score
+peaks_coords = np.array(exps["peaks_mni"].explode().tolist())
+
+# Get task types of individual peaks
+peaks_tasks = exps.explode("peaks_mni")["group"].cat.codes
+
+# Extract all individual peaks and their z score
+peaks_coords = np.array(exps["peaks_mni"].explode().tolist())
+
+# Get indices of peaks without an effect size
+idxs_p = np.where(np.isnan(peaks_coords))[0]
+
+# Plot individual peaks
+
+peaks = plotting.plot_markers(
+    node_values=peaks_tasks,
+    node_coords=peaks_coords,
+    node_size=5,
+    node_cmap="Set1",
+    node_vmin=0.5,
+    #node_vmax=2,
+    alpha=0.8,
+    display_mode='ortho',
+    colorbar=True)
+
+# ALE results -plot
+ale_thresh_all = '/Results/ALE/all_z_size_level_thresh.nii.gz'
+
+glass_brains_all = plotting.plot_glass_brain(ale_thresh_all, 
+                                             display_mode="lyrz", 
+                                             cmap="cold_white_hot", 
+                                             vmin=0, vmax=5,
+                                             colorbar=True)
+
+stat_map_all_cor = plotting.plot_stat_map(ale_thresh_all, 
+                                    colorbar=False, 
+                                    display_mode = 'ortho',
+                                    cut_coords=[-6,10,-2],
+                                    draw_cross = False,
+                                    cmap = "cold_white_hot", vmax=5)

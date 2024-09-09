@@ -1,20 +1,4 @@
-# -*- coding: utf-8 -*-
-# ---
-# jupyter:
-#   jupytext:
-#     formats: py:percent
-#     text_representation:
-#       extension: .py
-#       format_name: percent
-#       format_version: '1.3'
-#       jupytext_version: 1.11.1
-#   kernelspec:
-#     display_name: Python 3
-#     language: python
-#     name: python3
-# ---
-
-# %% [markdown]
+# Title: Subtraction Analysis
 # ![SkeideLab and MPI CBS logos](../misc/header_logos.png)
 #
 # # Notebook #02: Subtraction Analysis
@@ -25,7 +9,6 @@
 #
 # We again start by loading the relevant packages.
 
-# %%
 from os import makedirs, path
 import os
 import numpy as np
@@ -34,10 +17,8 @@ from nibabel import save
 from nilearn import glm, image, plotting, reporting
 from nimare import io, meta
 
-# %% [markdown]
 # Before doing the actual subtraction analyses, let's define a helper function for statistical thresholding. Since no FWE correction method has been defined for subtraction analyses (yet), we use an uncorrected voxel-level threshold (usually $p<.001$) combined with a cluster-level extent threshold (in mm<sup>3</sup>). Note that we assume the voxel size to be 2×2×2 mm<sup>3</sup> (the default in NiMARE).
 
-# %%
 # Define helper function for dual threshold based on voxel-p and cluster size (in mm3)
 def dual_thresholding(
     img_z, voxel_thresh, cluster_size_mm3, two_sided=True, fname_out=None
@@ -82,11 +63,8 @@ def dual_thresholding(
 
     return img_z_thresh
 
-
-# %% [markdown]
 # Now we can go on to perform the actual subtraction analyses. We again define a helper function for this so we can apply this to multiple Sleuth files with a single call (and also reuse it in later notebooks). We simply read two Sleuth files into NiMARE and let its `meta.cbma.ALESubtraction()` function do the rest (as briefly described above). It outputs an unthresholded *z* score map which we then threshold using our helper function.
 
-# %%
 # Define function for performing a single ALE subtraction analysis
 def run_subtraction(
     text_file1,
@@ -138,11 +116,8 @@ def run_subtraction(
         fname_out=prefix + "_z_thresh.nii.gz",
     )
 
-
-# %% [markdown]
 # We create a dictionary of Sleuth file names which we want to subtract from one another and supply each of these contrasts to the function that we have just defined. Note that large numbers of Monte Carlo iterations (≥ 10,000) seem to be necessary to get stable results. However, this requires very large amounts of memory. You may therefore want to decrease `n_iters` when trying out this code on a small local machine or on a cloud server.
 
-# %%
 if __name__ == "__main__":
 
     # Create dictionary for subtraction analysis: health vs unhealth

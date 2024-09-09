@@ -1,19 +1,3 @@
-# ---
-# jupyter:
-#   jupytext:
-#     formats: py:percent
-#     text_representation:
-#       extension: .py
-#       format_name: percent
-#       format_version: '1.3'
-#       jupytext_version: 1.11.1
-#   kernelspec:
-#     display_name: Python 3
-#     language: python
-#     name: python3
-# ---
-
-# %% [markdown]
 # ![SkeideLab and MPI CBS logos](../misc/header_logos.png)
 #
 # # Notebook #08: Output Figures
@@ -22,7 +6,6 @@
 #
 # This notebooks contains the code that we've used to create publication-ready figures from the statistical maps that we've created in the previous notebooks. We did not add any explanatory text because no substantial work is happening here and the solutions we've used are very idiosyncratic to the present meta-analysis. Also, most of what is happening should hopefully become clear from the code itself and the comments. For most figures, we rely heavily on Nilearn's `plot_glass_brain()` function and combine multiple of these glass brains using matplotlib's `gridspec` syntax. Note that there is no code for Figure 1 (showing the literature search and selection process in the form of a [PRISMA flowchart](https://doi.org/10.1136/bmj.n71)). This is because this figure was created manually using [LibreOffice Impress](https://www.libreoffice.org).
 
-# %%
 from os import makedirs
 
 import matplotlib as mpl
@@ -33,9 +16,43 @@ import seaborn as sns
 from nilearn import image, plotting
 from scipy import stats
 from scipy.stats import pearsonr
+# 绘制绘图的函数
+# Read table of experiments from ALE analysis
+exps = pd.read_json("/Results/ALE/all_exps.json")
 
-# %%
-# Specify default font
+# Convert to categories and sort
+group = ["Babies","Babies + Cry","Cry","Friendship", "Non-babies","Romance"]
+exps["group"] = exps["group"].astype("category")
+exps["group"].cat.reorder_categories(group, inplace=True)
+
+# Extract all individual peaks and their z score
+peaks_coords = np.array(exps["peaks_mni"].explode().tolist())
+
+# Get task types of individual peaks
+peaks_tasks = exps.explode("peaks_mni")["group"].cat.codes
+
+# Extract all individual peaks and their z score
+peaks_coords = np.array(exps["peaks_mni"].explode().tolist())
+
+# Get indices of peaks without an effect size
+idxs_p = np.where(np.isnan(peaks_coords))[0]
+
+# Plot individual peaks
+
+peaks = plotting.plot_markers(
+    node_values=peaks_tasks,
+    node_coords=peaks_coords,
+    node_size=5,
+    node_cmap="Set1",
+    node_vmin=0.5,
+    #node_vmax=2,
+    alpha=0.8,
+    display_mode='ortho',
+    colorbar=True)
+
+
+
+
 # mpl.rcParams.update({"font.family": ["Liberation Sans"], "font.size": 12})
 
 # Create output directory

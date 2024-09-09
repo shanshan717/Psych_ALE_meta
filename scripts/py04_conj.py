@@ -1,19 +1,4 @@
-# ---
-# jupyter:
-#   jupytext:
-#     formats: py:percent
-#     text_representation:
-#       extension: .py
-#       format_name: percent
-#       format_version: '1.3'
-#       jupytext_version: 1.11.1
-#   kernelspec:
-#     display_name: Python 3
-#     language: python
-#     name: python3
-# ---
 
-# %% [markdown]
 # ![SkeideLab and MPI CBS logos](../misc/header_logos.png)
 #
 # # Notebook #03: Comparison of Semantic Cognition in Children and Adults
@@ -24,7 +9,6 @@
 #
 # Let's start by loading all the packages we need. Note that we're also importing two of the custom functions which we have created in the first two notebooks.
 
-# %%
 from os import makedirs, path
 from shutil import copy
 
@@ -39,20 +23,16 @@ import pandas as pd
 from atlasreader import get_statmap_info
 from IPython.display import display
 
-# %% [markdown]
 # We create a new output directory and put our two pre-existing Sleuth files there: the child-specific Sleuth file that we created with the help of Notebook #01 and the adult-specific Sleuth file that was kindly provided to us by Dr Rebecca L. Jackson from MRC CBU at Cambridge (UK).
 
-# %%
 # Copy Sleuth text files to the results directory
 output_dir = "output"
 _ = makedirs(output_dir, exist_ok=True)
 _ = copy("data/health.txt", output_dir + "health.txt")
 _ = copy("data/unhealth.txt", output_dir + "unhealth.txt")
 
-# %% [markdown]
 # We can use our custom ALE function to recreate the adult-specific analysis. We use the same voxel- and cluster-level thresholds as for the children so that our group comparison will be meaningful.
 
-# %%
 # Perform the ALE analysis for health
 _ = run_ale(
     text_file=output_dir + "health.txt",
@@ -63,38 +43,11 @@ _ = run_ale(
     output_dir=output_dir,
 )
 
-# %% [markdown]
 # The group comparison can now be computed with the help of our custom function which we defined in Notebook #02.
-
-# %%
-"""
-# Perform subtraction analysis for children vs. adults
-run_subtraction(
-    text_file1="../results/adults/children.txt",
-    text_file2="../results/adults/adults.txt",
-    voxel_thresh=0.001,
-    cluster_size_mm3=200,
-    random_seed=1234,
-    n_iters=20000,
-    output_dir=output_dir,
-)
-"""
-# %% [markdown]
 # As a cosmetic measure, we split up the resulting difference map into two separate ones: One showing only the significant clusters for children > adults and one showing only the significant clusters for adults > children. This will make it easier later on to present these two sets of clusters in separate cluster tables.
 
-# %%
-"""
-# Compute seperate difference maps for children > adults and adults > children
-img_sub = image.load_img(output_dir + "children_minus_adults_z_thresh.nii.gz")
-img_children_gt_adults = image.math_img("np.where(img > 0, img, 0)", img=img_sub)
-img_adults_gt_children = image.math_img("np.where(img < 0, img * -1, 0)", img=img_sub)
-_ = save(img_children_gt_adults, output_dir + "children_greater_adults_z_thresh.nii.gz")
-_ = save(img_adults_gt_children, output_dir + "adults_greater_children_z_thresh.nii.gz")
-"""
-# %% [markdown]
 # Finally, we also compute a conjunction map. This map shows all the brain regions that are engaged in semantic cognition in *both* groups (but not those specific to either one of them). For these voxels, we just take the smaller of the two *z* values from both group-specific *z* score maps (Nichols et al., 2005, *NeuroImage*). We then do the same for the ALE maps so we have our conjunction maps with both *z* scores and ALE values.
 
-# %%
 # Compute conjunction z map (= minimum voxel-wise z score across both groups)
 formula = "np.where(img1 * img2 > 0, np.minimum(img1, img2), 0)"
 img_health_z = image.load_img(output_dir + "health_z_thresh.nii.gz")
@@ -108,10 +61,8 @@ img_unhealth_ale = image.load_img(output_dir + "unhealth_stat_thresh.nii.gz")
 img_conj_ale = image.math_img(formula, img1=img_health_ale, img2=img_unhealth_ale)
 _ = save(img_conj_ale, output_dir + "health_conj_unhealth_ale.nii.gz")
 
-# %% [markdown]
 # Now let's look at the different maps that we've created in the previous steps. We started with the adult-specific ALE analysis.
 
-# %%
 # Glass brain for health only
 p = plotting.plot_glass_brain(img_health_z, display_mode="lyrz", colorbar=True)
 
@@ -119,31 +70,10 @@ p = plotting.plot_glass_brain(img_health_z, display_mode="lyrz", colorbar=True)
 t = reporting.get_clusters_table(img_health_z, stat_threshold=0, min_distance=1000)
 display(t)
 
-# %% [markdown]
 # Second, let's plot the subtraction map which shows us the group differences between children and adults.
-
-# %%
 # Glass brain for health vs. unhealth
-"""
-p_sub = plotting.plot_glass_brain(
-    img_sub,
-    display_mode="lyrz",
-    colorbar=True,
-    vmax=5,
-    plot_abs=False,
-    symmetric_cbar=True,
-)
-
-# Cluster table for children vs. adults
-t_sub = reporting.get_clusters_table(
-    img_sub, stat_threshold=0, min_distance=1000, two_sided=True
-)
-display(t_sub)
-"""
-# %% [markdown]
 # And, finally, let's also plot the conjunction map to see which clusters were engaged in semantic cognition in both children *and* adults.
 
-# %%
 # Glass brain for conjunction
 p_conj = plotting.plot_glass_brain(
     img_conj_z,

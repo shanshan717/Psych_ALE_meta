@@ -1,19 +1,3 @@
-# -*- coding: utf-8 -*-
-# ---
-# jupyter:
-#   jupytext:
-#     formats: py:percent
-#     text_representation:
-#       extension: .py
-#       format_name: percent
-#       format_version: '1.3'
-#       jupytext_version: 1.11.1
-#   kernelspec:
-#     display_name: Python 3
-#     language: python
-#     name: python3
-# ---
-
 # 加载必要的包
 from os import makedirs, path
 import os
@@ -24,7 +8,6 @@ from nibabel import save
 from nilearn import image, plotting, reporting
 from nimare import correct, io, meta, utils #主要用nimare完成元分析
 from scipy.stats import norm
-
 
 # We are now ready to perform the actual ALE analyses with NiMARE. 
 # We write a custom function which takes a single Sleuth text file as its input and (a) calculates the ALE map, 
@@ -93,7 +76,6 @@ if __name__ == "__main__":
 
 # Finally, let's look at some exemplary results by plotting the (cluster-level FWE-corrected) *z* score map from the main analysis (including all semantic experiments). We also print a table of the corresponding cluster statistics.
 
-# %%
 if __name__ == "__main__":
 
     # Glass brain example
