@@ -51,8 +51,6 @@ peaks = plotting.plot_markers(
     colorbar=True)
 
 
-
-
 # mpl.rcParams.update({"font.family": ["Liberation Sans"], "font.size": 12})
 
 # Create output directory

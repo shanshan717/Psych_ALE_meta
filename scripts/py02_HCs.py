@@ -60,7 +60,7 @@ def run_ale(text_file, voxel_thresh, cluster_thresh, random_seed, n_iters, outpu
 
 # 运行ALE分析
 if __name__ == "__main__":
-    # 输入疾病患者的Sleuth文件
+    # 输入健康被试的Sleuth文件
     sleuth_file = "data/health.txt"
 
     # 应用我们定义的 run_ale 函数

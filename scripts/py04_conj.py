@@ -1,108 +1,111 @@
-
-# ![SkeideLab and MPI CBS logos](../misc/header_logos.png)
-#
-# # Notebook #03: Comparison of Semantic Cognition in Children and Adults
-#
-# *Created April 2021 by Alexander Enge* ([enge@cbs.mpg.de](mailto:enge@cbs.mpg.de))
-#
-# Here we compare our ALE results for semantic cognition in children to the results from a previous meta-analysis that also used ALE to investigate semantic cognition in adults (Jackson, 2021, *NeuroImage*). The original author of this analysis was so kind to provide us with their Sleuth text file. This contains the coordinates from more than 400 fMRI experiments with adults. Using the same functions as in Notebook #01, we recreate the ALE analysis for the adult data and then, using the same functions as in Notebook #02, we contrast the two groups against one another.
-#
-# Let's start by loading all the packages we need. Note that we're also importing two of the custom functions which we have created in the first two notebooks.
-
 from os import makedirs, path
-from shutil import copy
-
-from IPython.display import display
+import os
 from nibabel import save
 from nilearn import image, plotting, reporting
-
-from py02_HCs import run_ale
-import os
-from pathlib import Path
-
-import matplotlib.pyplot as plt
-from nilearn.plotting import plot_stat_map
+from nilearn.plotting import plot_glass_brain
 import numpy as np
 import pandas as pd
 from atlasreader import get_statmap_info
 from IPython.display import display
-from nimare.workflows.misc import conjunction_analysis
-from nimare.io import convert_sleuth_to_dataset
-from nimare.utils import get_resource_path
 
 # We create a new output directory and put our two pre-existing Sleuth files there: the child-specific Sleuth file that we created with the help of Notebook #01 and the adult-specific Sleuth file that was kindly provided to us by Dr Rebecca L. Jackson from MRC CBU at Cambridge (UK).
 
+# 创建输出目录
+output_dir = "output/conj"
+def create_output_dir(output_dir):
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    return output_dir
 
-img_conj = conjunction_analysis([knowledge_img, related_img])
+# 计算并保存联合分析结果
+def compute_conjunction_map(img1_path, img2_path, output_path, map_type="z", formula="np.where(img1 * img2 > 0, np.minimum(img1, img2), 0)"):
+    """
+    计算联合分析图（conjunction map），根据两个组的图像计算每个体素的最小值
+    """
+    img1 = image.load_img('output/ale/HCs/health_z_thresh.nii.gz')
+    img2 = image.load_img('output/ale/unhealth_z_thresh.nii.gz')
 
-plot_stat_map(
-    img_conj,
-    cut_coords=4,
-    display_mode="z",
-    title="Conjunction",
-    threshold=2.326,  # cluster-level p < .01, one-tailed
-    cmap="RdBu_r",
-    symmetric_cbar=True,
-    vmax=4,
-)
+    img_conj = image.math_img(formula, img1=img1, img2=img2)
+    output_file = os.path.join(output_path, f"conjunction_{map_type}.nii.gz")
+    save(img_conj, output_file)
+    
+    print(f"联合分析图 {map_type} 已保存至 {output_file}")
+    return img_conj
 
-# Copy Sleuth text files to the results directory
-output_dir = "output"
-_ = makedirs(output_dir, exist_ok=True)
-_ = copy("data/health.txt", output_dir + "health.txt")
-_ = copy("data/unhealth.txt", output_dir + "unhealth.txt")
+# 可视化联合分析结果并保存
+def plot_conjunction_map(img_conj, map_type="z", vmax=8, output_dir=None):
+    """
+    可视化联合分析的玻璃脑图，并保存图像文件
+    """
+    # 设置输出文件路径
+    output_file = os.path.join(output_dir, f"conjunction_{map_type}_map.png") if output_dir else None
 
-# We can use our custom ALE function to recreate the adult-specific analysis. We use the same voxel- and cluster-level thresholds as for the children so that our group comparison will be meaningful.
+    # 生成玻璃脑图，并保存图像到指定路径
+    plotting.plot_glass_brain(
+        img_conj, display_mode="lyrz", colorbar=True, vmax=vmax, 
+        title=f"Conjunction {map_type} Map", output_file=output_file
+    )
+    
+    if output_file:
+        print(f"联合分析图已保存至: {output_file}")
 
-# Perform the ALE analysis for health
-_ = run_ale(
-    text_file=output_dir + "health.txt",
-    voxel_thresh=0.001,
-    cluster_thresh=0.01,
-    random_seed=1234,
-    n_iters=5000,
-    output_dir=output_dir,
-)
+# 生成簇统计表并保存为TSV文件
+def generate_cluster_table(img_conj, map_type="z", stat_threshold=0, min_distance=1000, output_dir=None, atlas="harvard_oxford"):
+    """
+    生成联合图的簇统计表，并保存为TSV文件
+    """
+    table = reporting.get_clusters_table(img_conj, stat_threshold=stat_threshold, min_distance=min_distance)
+    print(f"{map_type} Map的簇统计表：")
+    display(table)
+    
+    if output_dir:
+        # 保存为TSV文件
+        tsv_file = os.path.join(output_dir, f"{map_type}_clusters_table.tsv")
+        table.to_csv(tsv_file, sep="\t", index=False)
+        print(f"簇统计表已保存至: {tsv_file}")
 
-# The group comparison can now be computed with the help of our custom function which we defined in Notebook #02.
-# As a cosmetic measure, we split up the resulting difference map into two separate ones: One showing only the significant clusters for children > adults and one showing only the significant clusters for adults > children. This will make it easier later on to present these two sets of clusters in separate cluster tables.
+# 主函数，进行联合分析
+def run_conjunction_analysis(group1_z_path, group2_z_path, group1_ale_path, group2_ale_path, output_dir):
+    """
+    运行联合分析，分别计算z值图和ALE图的联合图，并保存结果
+    """
+    # 创建输出目录
+    create_output_dir(output_dir)
 
-# Finally, we also compute a conjunction map. This map shows all the brain regions that are engaged in semantic cognition in *both* groups (but not those specific to either one of them). For these voxels, we just take the smaller of the two *z* values from both group-specific *z* score maps (Nichols et al., 2005, *NeuroImage*). We then do the same for the ALE maps so we have our conjunction maps with both *z* scores and ALE values.
+    # 计算 z 值联合图
+    print("计算 z 值联合图...")
+    img_conj_z = compute_conjunction_map(group1_z_path, group2_z_path, output_dir, map_type="z")
 
-# Compute conjunction z map (= minimum voxel-wise z score across both groups)
-formula = "np.where(img1 * img2 > 0, np.minimum(img1, img2), 0)"
-img_health_z = image.load_img(output_dir + "health_z_thresh.nii.gz")
-img_unhealth_z = image.load_img(output_dir + "unhealth_z_thresh.nii.gz")
-img_conj_z = image.math_img(formula, img1=img_health_z, img2=img_unhealth_z)
-_ = save(img_conj_z, output_dir + "health_conj_unhealth_z.nii.gz")
+    # 计算 ALE 联合图
+    print("计算 ALE 值联合图...")
+    img_conj_ale = compute_conjunction_map(group1_ale_path, group2_ale_path, output_dir, map_type="ale")
 
-# Compute conjunction ALE map (= minimum voxel-wise ALE value across both groups)
-img_health_ale = image.load_img(output_dir + "health_stat_thresh.nii.gz")
-img_unhealth_ale = image.load_img(output_dir + "unhealth_stat_thresh.nii.gz")
-img_conj_ale = image.math_img(formula, img1=img_health_ale, img2=img_unhealth_ale)
-_ = save(img_conj_ale, output_dir + "health_conj_unhealth_ale.nii.gz")
+    # 可视化联合 z 值图
+    print("可视化 z 值联合图...")
+    plot_conjunction_map(img_conj_z, map_type="z",  output_dir=output_dir)
 
-# Now let's look at the different maps that we've created in the previous steps. We started with the adult-specific ALE analysis.
+    # 可视化联合 ALE 值图
+    print("可视化 ALE 值联合图...")
+    plot_conjunction_map(img_conj_ale, map_type="ale",  output_dir=output_dir)
 
-# Glass brain for health only
-p = plotting.plot_glass_brain(img_health_z, display_mode="lyrz", colorbar=True)
+    # 生成簇统计表（z 值）
+    print("生成 z 值簇统计表...")
+    generate_cluster_table(img_conj_z, map_type="z",  output_dir=output_dir)
 
-# Cluster table for healthonly
-t = reporting.get_clusters_table(img_health_z, stat_threshold=0, min_distance=1000)
-display(t)
+    # 生成簇统计表（ALE）
+    print("生成 ALE 值簇统计表...")
+    generate_cluster_table(img_conj_ale, map_type="ale",  output_dir=output_dir)
 
-# Second, let's plot the subtraction map which shows us the group differences between children and adults.
-# Glass brain for health vs. unhealth
-# And, finally, let's also plot the conjunction map to see which clusters were engaged in semantic cognition in both children *and* adults.
 
-# Glass brain for conjunction
-p_conj = plotting.plot_glass_brain(
-    img_conj_z,
-    display_mode="lyrz",
-    colorbar=True,
-    vmax=8,
-)
+# 运行示例
+if __name__ == "__main__":
+    # 示例数据路径，使用你自己的z值图和ALE值图路径
+    group1_z_path = "output/ale/HCs/health_z_thresh.nii.gz"  # 替换为实际路径
+    group2_z_path = "output/ale/unhealth_z_thresh.nii.gz"  # 替换为实际路径
+    group1_ale_path = "output/ale/HCs/health_stat_thresh.nii.gz"  # 替换为实际路径
+    group2_ale_path = "output/ale/unhealth_stat_thresh.nii.gz"  # 替换为实际路径
 
-# Cluster table for conjunction
-t_conj = reporting.get_clusters_table(img_conj_z, stat_threshold=0, min_distance=1000)
-display(t_conj)
+    output_dir = "output"  # 输出目录
+
+    # 运行联合分析
+    run_conjunction_analysis(group1_z_path, group2_z_path, group1_ale_path, group2_ale_path, output_dir)

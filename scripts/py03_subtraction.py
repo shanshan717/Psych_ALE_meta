@@ -1,14 +1,4 @@
 # Title: Subtraction Analysis
-# ![SkeideLab and MPI CBS logos](../misc/header_logos.png)
-#
-# # Notebook #02: Subtraction Analysis
-#
-# *Created April 2021 by Alexander Enge* ([enge@cbs.mpg.de](mailto:enge@cbs.mpg.de))
-#
-# In this second notebook, we perform a couple of ALE subtraction analyses (also called contrast analyses; Laird et al., 2005, *Hum Brain Mapp*). These will inform us if and where there are reliable differences between two ALE images, e.g., for two different semantic task categories or for older as compared to younger children. The logic is to subtract one ALE image from another ALE image and compare the resulting difference scores to an empirical null distribution (derived from reshuffling the experiments into random groups and calculating new subtraction images under the null).
-#
-# We again start by loading the relevant packages.
-
 from os import makedirs, path
 import os
 import numpy as np
@@ -136,6 +126,6 @@ if __name__ == "__main__":
             voxel_thresh=0.001,        # Set voxel threshold
             cluster_size_mm3=200,      # Set cluster size threshold
             random_seed=1234,          # Set random seed for reproducibility
-            n_iters=1000,             # 这里作者用的是20000，我这里改成了1000
+            n_iters=5000,             # 这里作者用的是20000，我这里改成了1000
             output_dir="../output/ale"  # Specify your output directory
         )
