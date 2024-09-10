@@ -17,13 +17,34 @@ from nibabel import save
 from nilearn import image, plotting, reporting
 
 from py02_HCs import run_ale
+import os
+from pathlib import Path
 
+import matplotlib.pyplot as plt
+from nilearn.plotting import plot_stat_map
 import numpy as np
 import pandas as pd
 from atlasreader import get_statmap_info
 from IPython.display import display
+from nimare.workflows.misc import conjunction_analysis
+from nimare.io import convert_sleuth_to_dataset
+from nimare.utils import get_resource_path
 
 # We create a new output directory and put our two pre-existing Sleuth files there: the child-specific Sleuth file that we created with the help of Notebook #01 and the adult-specific Sleuth file that was kindly provided to us by Dr Rebecca L. Jackson from MRC CBU at Cambridge (UK).
+
+
+img_conj = conjunction_analysis([knowledge_img, related_img])
+
+plot_stat_map(
+    img_conj,
+    cut_coords=4,
+    display_mode="z",
+    title="Conjunction",
+    threshold=2.326,  # cluster-level p < .01, one-tailed
+    cmap="RdBu_r",
+    symmetric_cbar=True,
+    vmax=4,
+)
 
 # Copy Sleuth text files to the results directory
 output_dir = "output"
