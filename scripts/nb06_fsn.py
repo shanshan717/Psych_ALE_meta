@@ -14,6 +14,7 @@ from nibabel import save
 from nilearn import image, reporting
 from nimare import correct, io, meta, utils
 from scipy.stats import norm
+from datetime import datetime
 
 # Our FSN simulations will heavily rely on the generation of so called "null experiments," i.e., fictional experiments with their peaks randomly distributed across the brain. We'll start by writing a helper function for creating these. It takes as its input a "real" ALE data set (in the form of a Sleuth text file, see Notebook #1 and [this example](http://www.brainmap.org/ale/foci2.txt)). It then creates a desired number (`k_null`) of null experiments that are similar to the real experiments in terms of sample sizes and number of peak coordinates. However, the location of these peaks is drawn randomly from all voxels within our gray matter template. For these experiments, we know that the null hypothesis (i.e., no spatial convergence) is true, thus providing a testing ground for the file drawer effect.
 
@@ -27,7 +28,7 @@ def generate_null(
 ):
 
     # Load NiMARE's gray matter template
-    temp = utils.get_template(space=space, mask="gm")
+    temp = utils.get_template(space=space, mask= "brain") # 这里的mask是哪里来的
 
     # Extract possible MNI coordinates for all gray matter voxels
     x, y, z = np.where(temp.get_fdata() == 1.0)
@@ -89,8 +90,8 @@ def compute_fsn(
     text_file="peaks.txt",
     space="mni152_2mm",
     voxel_thresh=0.001,
-    cluster_thresh=0.01,
-    n_iters=1000, # 为什么是1000？
+    cluster_thresh=0.01, # 也可以用0.05
+    n_iters=1000, # 为什么是1000？也可以用10000
     k_max_factor=5, # 最大虚拟实验的数量，通常是原始实验数量的5倍。
     random_ale_seed=None,
     random_null_seed=None,
@@ -98,7 +99,20 @@ def compute_fsn(
 ):
 
     # Let's show the user what we are doing
-    print("\nCOMPUTING FSN FOR " + text_file + " (seed: " + str(random_null_seed) + ")")
+    now = datetime.now()
+    now_str = now.strftime("%d/%m/%Y %H:%M:%S")
+    #print("\nCOMPUTING FSN FOR " + text_file + 
+    #      " (seed: " + 
+    #      str(random_null_seed) + 
+    #      " - starting at:" now)")
+    print(
+        '\nCOMPUTING FSN FOR "'
+        + text_file
+        + '" (seed:  '
+        + str(random_null_seed)
+        + " - starting at:"
+        + now_str
+    )  
 
     # Set random seed for original ALE if requested
     if random_ale_seed:
@@ -126,9 +140,10 @@ def compute_fsn(
         output_dir=output_dir,
     )
 
-    # Create thresholded cluster mask
+    # Create thresholded cluster mask 创建阈值化的簇掩码（cluster mask）
+    ## 获取簇校正的统计图 (z_level-cluster_corr-FWE_method-montecarlo)
     img_fsn = cres_orig.get_map("z_level-cluster_corr-FWE_method-montecarlo")
-    cluster_thresh_z = norm.ppf(1 - cluster_thresh / 2)
+    cluster_thresh_z = norm.ppf(1 - cluster_thresh / 2) # 计算簇的 z 阈值
     img_fsn = image.threshold_img(img_fsn, threshold=cluster_thresh_z)
     img_fsn = image.math_img("np.where(img > 0, 1, 0)", img=img_fsn)
 
@@ -192,24 +207,24 @@ def compute_fsn(
 # Ideally, we want to perform all of this multiple times for different (random) filedrawers. Otherwise, the resulting FSN values would hinge a lot on the random patterns of these specific null experiments. However, doing all of these iterative simulations multiple times is extremly computationally expensive. We therefore wrote the next bit of the notebook in a way so that it can be run in parallel on our high performance computing (HPC) cluster. For this, we would call this notebook as a Python script from the command line and need to provide it with two additional parameters: The name of the original ALE analysis for which we want to compute the FSN and the number of different filedrawers we want to estimate (so we can always compute multiple filedrawers in parallel). If you don't happen to have access to an HPC and want to try the out the simulations directly withing the notebook, simply uncomment the two lines of code to define `prefixes` and `nr_filedrawers` locally.
 
 # Get which FSN analyses to perform from the command line
-prefixes = argv[1].split(",")
+prefixes = ["unhealth"]
 
 # Get number of filedrawers per analysis from the command line
-nr_filedrawers = int(argv[2])
+nr_unhealth = 5
 
 # # Or define them here for debugging
 # prefixes = ["all", "knowledge", "relatedness", "objects"]
 # nr_filedrawers = 10
 
 # List the filenames of the Sleuth text files
-text_files = ["data/unhealth.txt" + prefix + ".txt" for prefix in prefixes]
+text_files = ["data/" + prefix + ".txt" for prefix in prefixes]
 
 # Create output directory names
 output_dirs = ["output/fsn" + prefix + "/" for prefix in prefixes]
 
 # Create random seeds for filedrawers
-random_null_seeds = random.sample(range(1000), k=nr_filedrawers)
-unhealth = ["unhealth" + str(seed) for seed in random_null_seeds]
+random_null_seeds = random.sample(range(1000), k=nr_unhealth)
+filedrawers = ["filedrawer" + str(seed) for seed in random_null_seeds]
 
 # The actual simulations are happening here: For each of the input text file (one for each original ALE analysis), we compute one FSN map for a number of different filedrawers (in our paper, we used ten). The results for each file drawer will be stored in separate folder which also indicates the random seed value (e.g., `166`) that was used to generate the null experiments (e.g., `results/fsn/all/filedrawer166`).
 
@@ -217,10 +232,10 @@ unhealth = ["unhealth" + str(seed) for seed in random_null_seeds]
 _ = [
     [
         compute_fsn(
-            text_file=text_file, # The original ALE analysis
-            space="mni152_2mm",
+            text_file=text_file,
+            space="ale_2mm",
             voxel_thresh=0.001,
-            cluster_thresh=0.01,
+            cluster_thresh=0.05,
             n_iters=1000,
             k_max_factor=5,
             random_ale_seed=1234,
@@ -232,20 +247,25 @@ _ = [
     for text_file, output_dir in zip(text_files, output_dirs)
 ]
 
+now_end = datetime.now()
+now_end_str = now_end.strftime("%d/%m/%Y %H:%M:%S")
+print("Finished at" + now_end_str)
+
 # Once the simulation are done, we need to aggregate the results that we've obtained for each analysis across multiple file drawers. Remember that for each file drawer, we've already stored an FSN map as well as a table that contains the FSN value for each of the original cluster peaks. Here we just average these maps and perform some summary statistics on the tables, such as computing the mean FSN and its 95% confidence interval across the multiple file drawers (in our case, ten).
 
 # Compute mean FSN across filedrawers
+prefixes = ["unhealth"]
 for prefix in prefixes:
 
     # Read FSN maps from all filedrawers
     fnames_maps = glob(
-        "output/fsn" + prefix + "/unhealth/" + prefix + "_fsn.nii.gz"
+        "output/fsn" + prefix + "/filedrawer*/" + prefix + "_fsn.nii.gz"
     )
     imgs_fsn = [image.load_img(fname) for fname in fnames_maps]
 
     # Average and save
     img_mean = image.mean_img(imgs_fsn)
-    fname_img_mean = "output/fsn" + prefix + "/" + prefix + "_mean_fsn.nii.gz"
+    fname_img_mean = "output/fsn" + prefix + "/filedrawer*/" + prefix + "_mean_fsn.nii.gz"
     save(img_mean, fname_img_mean)
 
     # Read FSN tables from all filedrawers
@@ -266,5 +286,5 @@ for prefix in prefixes:
     agg["ci_upper"] = agg["mean"] + z_crit * agg["se"]
 
     # Save summary statistics
-    fname_agg = "output/fsn" + prefix + "/unhealth/" + prefix + "_mean_fsn.csv"
+    fname_agg = "output/fsn" + prefix + prefix + "/" + prefix + "_mean_fsn.csv"
     agg.to_csv(fname_agg, float_format="%.3f")
