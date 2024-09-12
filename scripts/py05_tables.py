@@ -1,13 +1,3 @@
-# ![SkeideLab and MPI CBS logos](../misc/header_logos.png)
-#
-# # Notebook #07: Output Tables
-#
-# *Created April 2021 by Alexander Enge* ([enge@cbs.mpg.de](mailto:enge@cbs.mpg.de))
-#
-# This notebook contains a convenience function that we've used to create all of the tables for our manuscript. We only comment on these sparsely since no substantial work is happening here and because the solutions we've used are very idiosyncratic to the present meta-analysis. Also note that the tables still required a bit of post-processing, such as turning the anatomical peak labels from abbreviations into plain language.
-
-# !pip install atlasreader
-
 from os import makedirs, path
 from atlasreader import get_statmap_info
 from IPython.display import display
