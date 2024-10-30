@@ -27,7 +27,7 @@ def run_ale(text_file, voxel_thresh, cluster_thresh, random_seed, n_iters, outpu
 
     # Perform the ALE
     # target默认的是'ale_2mm'和'mni152_2mm'两种，这里我们选择'mni152_2mm'
-    dset = io.convert_sleuth_to_dataset(text_file="data/health.txt", target="mni152_2mm") 
+    dset = io.convert_sleuth_to_dataset(text_file="data/Self_all.txt", target="mni152_2mm") 
     ale = meta.cbma.ALE()
     res = ale.fit(dset)
 
@@ -61,7 +61,7 @@ def run_ale(text_file, voxel_thresh, cluster_thresh, random_seed, n_iters, outpu
 # 运行ALE分析
 if __name__ == "__main__":
     # 输入健康被试的Sleuth文件
-    sleuth_file = "data/health.txt"
+    sleuth_file = "data/Self_all.txt"
 
     # 应用我们定义的 run_ale 函数
     cres = run_ale(
@@ -69,7 +69,7 @@ if __name__ == "__main__":
         voxel_thresh=0.001,
         cluster_thresh=0.05,
         random_seed=1234,
-        n_iters=5000,  
+        n_iters=100,  
         output_dir="data",
     )
 
@@ -79,7 +79,7 @@ if __name__ == "__main__":
 if __name__ == "__main__":
 
     # Glass brain example
-    img = image.load_img("data/health_z.nii.gz")
+    img = image.load_img("data/Self_all_z_desc-size_level-cluster_corr-FWE_method-montecarlo.nii.gz")
     p = plotting.plot_glass_brain(img, display_mode="lyrz", colorbar=True)
 
     # Cluster table example
